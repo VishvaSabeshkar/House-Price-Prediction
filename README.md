@@ -11,9 +11,9 @@ Each row represents a block of houses and the target variable is the median_hous
 ⚙️ Project Workflow
 
 Import Libraries
-Load essential Python libraries for data analysis and ML.
+  Load essential Python libraries for data analysis and ML.
 
-Data Exploration (EDA)
+  Data Exploration (EDA)
 
 Inspect missing values
 
