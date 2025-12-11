@@ -12,34 +12,24 @@ Each row represents a block of houses and the target variable is the median_hous
 
 Import Libraries
   Load essential Python libraries for data analysis and ML.
-
-  Data Exploration (EDA)
-
+Data Exploration (EDA)
 Inspect missing values
-
 Visualize distributions
-
 Identify correlations
-
 Data Preprocessing
-
 Handle missing values
-
 Feature scaling and encoding
-
 Train/test split
 
 Model Building
 Algorithms used:
-
-Linear Regression
-Random Forest Regressor
+  Linear Regression
+  Random Forest Regressor
 
 Model Evaluation
-
-Mean Squared Error (MSE)
-Root Mean Squared Error (RMSE)
-Cross-validation scores
+  Mean Squared Error (MSE)
+  Root Mean Squared Error (RMSE)
+  Cross-validation scores
 
 Prediction
 Predict housing prices for new unseen data.
