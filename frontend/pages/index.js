@@ -15,6 +15,8 @@ export default function Home() {
   });
 
   const [prediction, setPrediction] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -44,153 +46,472 @@ export default function Home() {
     }
   };
 
-  const styles = {
-    container: {
-      fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-      background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
-      minHeight: '100vh',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '40px 20px',
-    },
-    card: {
-      backgroundColor: '#ffffff',
-      padding: '40px',
-      borderRadius: '24px',
-      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-      width: '100%',
-      maxWidth: '650px',
-    },
-    header: {
-      textAlign: 'center',
-      marginBottom: '32px',
-      color: '#1a202c',
-      fontSize: '28px',
-      fontWeight: '700',
-      letterSpacing: '-0.5px',
-    },
-    grid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-      gap: '20px',
-    },
-    inputGroup: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '6px',
-    },
-    label: {
-      fontSize: '12px',
-      fontWeight: '600',
-      color: '#4a5568',
-      textTransform: 'uppercase',
-      marginLeft: '4px',
-    },
-    input: {
-      padding: '14px 16px',
-      borderRadius: '12px',
-      border: '2px solid #edf2f7',
-      fontSize: '16px',
-      color: '#2d3748', // Darker text for visibility
-      backgroundColor: '#f8fafc',
-      outline: 'none',
-      transition: 'all 0.2s ease',
-    },
-    // Adding active/focus state logic via JS object is limited, 
-    // but we can set a base style that looks "filled"
-    button: {
-      gridColumn: '1 / -1',
-      marginTop: '24px',
-      padding: '16px',
-      backgroundColor: '#1a202c',
-      color: '#ffffff',
-      border: 'none',
-      borderRadius: '12px',
-      fontSize: '16px',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'transform 0.1s ease, background-color 0.2s ease',
-    },
-    resultBox: {
-      marginTop: '32px',
-      padding: '24px',
-      borderRadius: '16px',
-      background: '#f0fff4',
-      border: '1px solid #c6f6d5',
-      textAlign: 'center',
-      animation: 'fadeIn 0.5s ease-out',
-    }
-  };
-
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h1 style={styles.header}>🏠 Real Estate Predictor</h1>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
         
-        <form onSubmit={handleSubmit} style={styles.grid}>
-          {Object.keys(form).map((key) => (
-            <div key={key} style={styles.inputGroup}>
-              <label style={styles.label}>{key.replace(/_/g, ' ')}</label>
-              
-              {key === "ocean_proximity" ? (
-                <select 
-                  name={key} 
-                  value={form[key]} 
-                  onChange={handleChange}
-                  style={styles.input}
-                >
-                  <option value="">Select Proximity</option>
-                  <option value="<1H OCEAN">&lt;1H OCEAN</option>
-                  <option value="INLAND">INLAND</option>
-                  <option value="ISLAND">ISLAND</option>
-                  <option value="NEAR BAY">NEAR BAY</option>
-                  <option value="NEAR OCEAN">NEAR OCEAN</option>
-                </select>
-              ) : (
-                <input
-                  name={key}
-                  type="text" // Changed to number for better mobile UX
-                  step="any"
-                  placeholder="0.00"
-                  value={form[key]}
-                  onChange={handleChange}
-                  style={styles.input}
-                  // Visual feedback when focused
-                  onFocus={(e) => {
-                    e.target.style.borderColor = '#3182ce';
-                    e.target.style.backgroundColor = '#fff';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = '#edf2f7';
-                    e.target.style.backgroundColor = '#f8fafc';
-                  }}
-                />
+        * {
+          font-family: 'Poppins', sans-serif;
+        }
+      `}</style>
+
+      {/* Hero Section */}
+      <section 
+        style={{
+          background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%)',
+          width: '100%',
+          fontSize: '14px',
+          paddingBottom: '176px'
+        }}
+      >
+        {/* Navigation */}
+        <nav style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px',
+          paddingLeft: menuOpen ? '16px' : '128px',
+          paddingRight: menuOpen ? '16px' : '128px',
+          paddingTop: '24px',
+          paddingBottom: '24px',
+          width: '100%'
+        }}>
+          <a href="https://prebuiltui.com">
+            <svg width="157" height="40" viewBox="0 0 157 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M47.904 28.28q-1.54 0-2.744-.644a5.1 5.1 0 0 1-1.904-1.82q-.672-1.148-.672-2.604v-3.864q0-1.456.7-2.604a4.9 4.9 0 0 1 1.904-1.792q1.204-.672 2.716-.672 1.82 0 3.276.952a6.44 6.44 0 0 1 2.324 2.52q.868 1.567.868 3.556 0 1.96-.868 3.556a6.5 6.5 0 0 1-2.324 2.492q-1.456.924-3.276.924m-7.196 5.32V14.56h3.08v3.612l-.532 3.276.532 3.248V33.6zm6.692-8.232q1.12 0 1.96-.504a3.6 3.6 0 0 0 1.344-1.456q.504-.924.504-2.128t-.504-2.128a3.43 3.43 0 0 0-1.344-1.428q-.84-.532-1.96-.532t-1.988.532a3.43 3.43 0 0 0-1.344 1.428q-.476.924-.476 2.128t.476 2.128a3.6 3.6 0 0 0 1.344 1.456q.868.504 1.988.504M56.95 28V14.56h3.08V28zm3.08-7.476-1.064-.532q0-2.548 1.12-4.116 1.148-1.596 3.444-1.596 1.008 0 1.82.364.812.365 1.512 1.176l-2.016 2.072a2.1 2.1 0 0 0-.812-.56 3 3 0 0 0-1.036-.168q-1.287 0-2.128.812-.84.811-.84 2.548m14.156 7.756q-2.016 0-3.64-.896a7 7 0 0 1-2.548-2.52q-.924-1.596-.924-3.584t.924-3.556a6.87 6.87 0 0 1 2.492-2.52q1.596-.924 3.528-.924 1.876 0 3.304.868a6.05 6.05 0 0 1 2.268 2.38q.84 1.512.84 3.444 0 .336-.056.7a7 7 0 0 1-.112.756H69.23v-2.52h9.436l-1.148 1.008q-.056-1.232-.476-2.072a3 3 0 0 0-1.204-1.288q-.756-.448-1.876-.448-1.176 0-2.044.504a3.43 3.43 0 0 0-1.344 1.428q-.476.896-.476 2.156t.504 2.212 1.428 1.484q.924.504 2.128.504 1.037 0 1.904-.364a4 4 0 0 0 1.512-1.064l1.96 1.988a6.3 6.3 0 0 1-2.38 1.736 7.6 7.6 0 0 1-2.968.588m15.91 0q-1.54 0-2.745-.644a5.1 5.1 0 0 1-1.904-1.82q-.672-1.148-.672-2.604v-3.864q0-1.456.7-2.604a4.9 4.9 0 0 1 1.904-1.792q1.204-.672 2.716-.672 1.821 0 3.276.952a6.44 6.44 0 0 1 2.324 2.52q.869 1.567.868 3.556 0 1.96-.868 3.556a6.5 6.5 0 0 1-2.324 2.492q-1.455.924-3.276.924M82.898 28V7.84h3.08v10.024l-.532 3.248.532 3.276V28zm6.692-2.632q1.12 0 1.96-.504a3.6 3.6 0 0 0 1.344-1.456q.504-.924.504-2.128t-.504-2.128a3.43 3.43 0 0 0-1.344-1.428q-.84-.532-1.96-.532t-1.988.532a3.43 3.43 0 0 0-1.344 1.428q-.476.924-.476 2.128.001 1.204.476 2.128a3.6 3.6 0 0 0 1.344 1.456q.87.504 1.988.504m15.067 2.912q-1.708 0-3.052-.756a5.5 5.5 0 0 1-2.072-2.072q-.728-1.344-.728-3.08V14.56h3.08v7.672q0 .98.308 1.68.336.672.952 1.036.644.364 1.512.364 1.344 0 2.044-.784.728-.812.728-2.296V14.56h3.08v7.812q0 1.764-.756 3.108a5.3 5.3 0 0 1-2.044 2.072q-1.317.728-3.052.728m8.976-.28V14.56h3.08V28zm1.54-15.904q-.783 0-1.316-.532-.504-.532-.504-1.316t.504-1.316a1.8 1.8 0 0 1 1.316-.532q.813 0 1.316.532t.504 1.316q0 .784-.504 1.316t-1.316.532M120.169 28V7.84h3.08V28zm8.552 0V8.96h3.08V28zm-3.22-10.64v-2.8h9.52v2.8zm17.274 10.92q-1.708 0-3.052-.756a5.5 5.5 0 0 1-2.072-2.072q-.728-1.344-.728-3.08V14.56h3.08v7.672q0 .98.308 1.68.336.672.952 1.036.643.364 1.512.364 1.344 0 2.044-.784.728-.812.728-2.296V14.56h3.08v7.812q0 1.764-.756 3.108a5.3 5.3 0 0 1-2.044 2.072q-1.317.728-3.052.728m8.977-.28V14.56h3.08V28zm1.54-15.904q-.785 0-1.316-.532-.504-.532-.504-1.316t.504-1.316a1.8 1.8 0 0 1 1.316-.532q.812 0 1.316.532t.504 1.316-.504 1.316-1.316.532" fill="#050040"/>
+              <path d="m8.75 11.3 6.75 3.884 6.75-3.885M8.75 34.58v-7.755L2 22.939m27 0-6.75 3.885v7.754M2.405 15.408 15.5 22.954l13.095-7.546M15.5 38V22.939M29 28.915V16.962a2.98 2.98 0 0 0-1.5-2.585L17 8.4a3.01 3.01 0 0 0-3 0L3.5 14.377A3 3 0 0 0 2 16.962v11.953A2.98 2.98 0 0 0 3.5 31.5L14 37.477a3.01 3.01 0 0 0 3 0L27.5 31.5a3 3 0 0 0 1.5-2.585" stroke="#050040" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </a>
+
+          {/* Desktop Menu */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '32px',
+            fontWeight: '500'
+          }} className="max-md:hidden">
+            <a href="#" style={{ color: '#050040' }} onMouseEnter={(e) => e.target.style.color = '#4b5563'} onMouseLeave={(e) => e.target.style.color = '#050040'}>
+              Home
+            </a>
+            <div 
+              style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+              onMouseEnter={() => setDropdownOpen(true)}
+              onMouseLeave={() => setDropdownOpen(false)}
+            >
+              <span>Products</span>
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="m4.5 7.2 3.793 3.793a1 1 0 0 0 1.414 0L13.5 7.2" stroke="#050040" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              {dropdownOpen && (
+                <div style={{
+                  position: 'absolute',
+                  backgroundColor: 'white',
+                  fontWeight: '400',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  width: 'max-content',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  top: '40px',
+                  left: '0',
+                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                }}>
+                  <a href="#" style={{ color: '#050040', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.target.style.transform = 'translateX(4px)'; e.target.style.color = '#64748b'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateX(0)'; e.target.style.color = '#050040'; }}>
+                    Templates
+                  </a>
+                  <a href="#" style={{ color: '#050040', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.target.style.transform = 'translateX(4px)'; e.target.style.color = '#64748b'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateX(0)'; e.target.style.color = '#050040'; }}>
+                    UI Components
+                  </a>
+                  <a href="#" style={{ color: '#050040', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.target.style.transform = 'translateX(4px)'; e.target.style.color = '#64748b'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateX(0)'; e.target.style.color = '#050040'; }}>
+                    Mobile Apps
+                  </a>
+                  <a href="#" style={{ color: '#050040', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.target.style.transform = 'translateX(4px)'; e.target.style.color = '#64748b'; }} onMouseLeave={(e) => { e.target.style.transform = 'translateX(0)'; e.target.style.color = '#050040'; }}>
+                    Web Apps
+                  </a>
+                </div>
               )}
             </div>
-          ))}
+            <a href="#" style={{ color: '#050040' }} onMouseEnter={(e) => e.target.style.color = '#4b5563'} onMouseLeave={(e) => e.target.style.color = '#050040'}>
+              Stories
+            </a>
+            <a href="#" style={{ color: '#050040' }} onMouseEnter={(e) => e.target.style.color = '#4b5563'} onMouseLeave={(e) => e.target.style.color = '#050040'}>
+              Pricing
+            </a>
+          </div>
 
-          <button 
-            type="submit" 
-            style={styles.button}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#2d3748'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#1a202c'}
-          >
-            Estimate Property Value
+          <button className="max-md:hidden" style={{
+            backgroundColor: '#1f2937',
+            color: 'white',
+            padding: '12px 24px',
+            borderRadius: '9999px',
+            fontWeight: '500',
+            transition: 'background-color 0.2s',
+            border: 'none',
+            cursor: 'pointer'
+          }} onMouseEnter={(e) => e.target.style.backgroundColor = '#000000'} onMouseLeave={(e) => e.target.style.backgroundColor = '#1f2937'}>
+            Contact Us
           </button>
-        </form>
 
-        {prediction !== null && (
-          <div style={styles.resultBox}>
-            <span style={{ fontSize: '14px', color: '#38a169', fontWeight: '600', textTransform: 'uppercase' }}>
-              Estimated Market Value
-            </span>
-            <div style={{ fontSize: '32px', fontWeight: '800', color: '#22543d', marginTop: '8px' }}>
-              ₹ {Number(prediction).toLocaleString('en-IN')}
-            </div>
+          <button className="md:hidden" onClick={() => setMenuOpen(true)} style={{
+            backgroundColor: '#1f2937',
+            color: 'white',
+            padding: '8px',
+            borderRadius: '6px',
+            aspectRatio: '1',
+            fontWeight: '500',
+            transition: 'background-color 0.2s',
+            border: 'none',
+            cursor: 'pointer'
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12h16"/>
+              <path d="M4 18h16"/>
+              <path d="M4 6h16"/>
+            </svg>
+          </button>
+        </nav>
+
+        {/* Mobile Menu Overlay */}
+        {menuOpen && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            backdropFilter: 'blur(10px)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '32px',
+            fontWeight: '500',
+            zIndex: 1000
+          }}>
+            <a href="#" style={{ color: '#050040' }}>Home</a>
+            <a href="#" style={{ color: '#050040' }}>Products</a>
+            <a href="#" style={{ color: '#050040' }}>Stories</a>
+            <a href="#" style={{ color: '#050040' }}>Pricing</a>
+            <button onClick={() => setMenuOpen(false)} style={{
+              backgroundColor: '#1f2937',
+              color: 'white',
+              padding: '8px',
+              borderRadius: '6px',
+              aspectRatio: '1',
+              fontWeight: '500',
+              border: 'none',
+              cursor: 'pointer'
+            }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18"/>
+                <path d="m6 6 12 12"/>
+              </svg>
+            </button>
           </div>
         )}
+
+        {/* Hero Content */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          border: '1px solid #cbd5e1',
+          borderRadius: '9999px',
+          width: 'max-content',
+          margin: '0 auto',
+          padding: '8px 16px',
+          marginTop: '160px',
+          cursor: 'pointer'
+        }} onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(100, 116, 139, 0.7)'} onMouseLeave={(e) => e.currentTarget.style.borderColor = '#cbd5e1'}>
+          <span>New announcement on your inbox</span>
+          <button style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            fontWeight: '500',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: '#050040'
+          }}>
+            <span>Read more</span>
+            <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3.959 9.5h11.083m0 0L9.501 3.958M15.042 9.5l-5.541 5.54" stroke="#050040" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <h1 style={{
+          fontSize: '56px',
+          fontWeight: '500',
+          maxWidth: '850px',
+          textAlign: 'center',
+          margin: '32px auto 0 auto',
+          lineHeight: '1.2',
+          color: '#050040'
+        }} className="max-md:text-4xl max-md:px-4">
+          Predict Property Values with AI Precision
+        </h1>
+
+        <p style={{
+          fontSize: '16px',
+          margin: '24px auto 0 auto',
+          maxWidth: '672px',
+          textAlign: 'center',
+          color: '#050040',
+          lineHeight: '1.6'
+        }} className="max-md:px-2 max-md:text-sm">
+          Leverage advanced machine learning algorithms to estimate real estate prices based on location, demographics, and property characteristics.
+        </p>
+
+        <div style={{
+          margin: '0 auto',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          marginTop: '16px'
+        }}>
+          <button onClick={() => document.getElementById('predictor-form')?.scrollIntoView({ behavior: 'smooth' })} style={{
+            backgroundColor: '#1f2937',
+            color: 'white',
+            padding: '12px 24px',
+            borderRadius: '9999px',
+            fontWeight: '500',
+            transition: 'background-color 0.2s',
+            border: 'none',
+            cursor: 'pointer'
+          }} onMouseEnter={(e) => e.target.style.backgroundColor = '#000000'} onMouseLeave={(e) => e.target.style.backgroundColor = '#1f2937'}>
+            Get Started
+          </button>
+          <button style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            border: '1px solid #cbd5e1',
+            borderRadius: '9999px',
+            padding: '12px 24px',
+            background: 'transparent',
+            cursor: 'pointer',
+            color: '#050040',
+            fontWeight: '500',
+            transition: 'background-color 0.2s'
+          }} onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(226, 232, 240, 0.3)'} onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}>
+            <span>Learn More</span>
+            <svg width="6" height="8" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.25.5 4.75 4l-3.5 3.5" stroke="#050040" strokeOpacity=".4" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      {/* Predictor Form Section */}
+      <div id="predictor-form" style={{
+        fontFamily: "'Poppins', sans-serif",
+        background: '#FAFAFA',
+        minHeight: '100vh',
+        padding: '80px 20px',
+      }}>
+        <div style={{
+          maxWidth: '1100px',
+          margin: '0 auto',
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            padding: '48px 40px',
+            borderRadius: '16px',
+            boxShadow: '0 2px 12px rgba(0, 0, 0, 0.06)',
+            border: '1px solid #E8E8E8',
+          }}>
+            <h2 style={{
+              fontSize: '14px',
+              fontWeight: '600',
+              color: '#7F8C8D',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              marginBottom: '24px',
+              paddingBottom: '12px',
+              borderBottom: '2px solid #ECF0F1',
+            }}>Property Details</h2>
+            
+            <form onSubmit={handleSubmit}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gap: '24px',
+                marginBottom: '32px',
+              }}>
+                {Object.keys(form).map((key) => (
+                  <div key={key} style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                  }}>
+                    <label style={{
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      color: '#2C3E50',
+                      textTransform: 'capitalize',
+                      marginLeft: '2px',
+                    }}>
+                      {key.replace(/_/g, ' ')}
+                    </label>
+                    
+                    {key === "ocean_proximity" ? (
+                      <select 
+                        name={key} 
+                        value={form[key]} 
+                        onChange={handleChange}
+                        style={{
+                          padding: '14px 16px',
+                          borderRadius: '10px',
+                          border: '2px solid #E8E8E8',
+                          fontSize: '15px',
+                          color: '#2C3E50',
+                          backgroundColor: '#FAFAFA',
+                          outline: 'none',
+                          transition: 'all 0.2s ease',
+                          fontFamily: 'inherit',
+                        }}
+                        required
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#2C3E50';
+                          e.target.style.backgroundColor = '#FFFFFF';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#E8E8E8';
+                          e.target.style.backgroundColor = '#FAFAFA';
+                        }}
+                      >
+                        <option value="">Select proximity</option>
+                        <option value="<1H OCEAN">&lt;1H OCEAN</option>
+                        <option value="INLAND">INLAND</option>
+                        <option value="ISLAND">ISLAND</option>
+                        <option value="NEAR BAY">NEAR BAY</option>
+                        <option value="NEAR OCEAN">NEAR OCEAN</option>
+                      </select>
+                    ) : (
+                      <input
+                        name={key}
+                        type="text"
+                        step="any"
+                        placeholder={key === 'longitude' || key === 'latitude' ? '-122.23' : '0'}
+                        value={form[key]}
+                        onChange={handleChange}
+                        style={{
+                          padding: '14px 16px',
+                          borderRadius: '10px',
+                          border: '2px solid #E8E8E8',
+                          fontSize: '15px',
+                          color: '#2C3E50',
+                          backgroundColor: '#FAFAFA',
+                          outline: 'none',
+                          transition: 'all 0.2s ease',
+                          fontFamily: 'inherit',
+                        }}
+                        required
+                        onFocus={(e) => {
+                          e.target.style.borderColor = '#2C3E50';
+                          e.target.style.backgroundColor = '#FFFFFF';
+                        }}
+                        onBlur={(e) => {
+                          e.target.style.borderColor = '#E8E8E8';
+                          e.target.style.backgroundColor = '#FAFAFA';
+                        }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <button 
+                type="submit" 
+                style={{
+                  width: '100%',
+                  marginTop: '16px',
+                  padding: '18px',
+                  backgroundColor: '#2C3E50',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  letterSpacing: '0.5px',
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = '#34495E';
+                  e.target.style.transform = 'translateY(-1px)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(44, 62, 80, 0.2)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = '#2C3E50';
+                  e.target.style.transform = 'translateY(0)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              >
+                Calculate Estimated Value
+              </button>
+            </form>
+
+            {/* Result Banner */}
+            {prediction !== null && (
+              <div style={{
+                marginTop: '32px',
+                padding: '40px 32px',
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #27AE60 0%, #2ECC71 100%)',
+                textAlign: 'center',
+                boxShadow: '0 4px 20px rgba(39, 174, 96, 0.2)',
+              }}>
+                <div style={{
+                  fontSize: '13px',
+                  color: '#E8F8F5',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1.5px',
+                  marginBottom: '8px',
+                }}>
+                  Estimated Market Value
+                </div>
+                <div style={{
+                  fontSize: '48px',
+                  fontWeight: '800',
+                  color: '#FFFFFF',
+                  marginTop: '8px',
+                  letterSpacing: '-1px',
+                }}>
+                  Rs. {Number(prediction).toLocaleString('en-IN')}
+                </div>
+              </div>
+            )}
+
+            {/* Info Banner */}
+            <div style={{
+              marginTop: '32px',
+              padding: '24px',
+              borderRadius: '12px',
+              background: '#ECF0F1',
+              border: '1px solid #D5DBDB',
+            }}>
+              <p style={{
+                fontSize: '13px',
+                color: '#7F8C8D',
+                margin: 0,
+                lineHeight: '1.6',
+                textAlign: 'center',
+              }}>
+                💡 This prediction is generated using advanced machine learning algorithms trained on California housing data. Results are estimates and should be used for reference purposes only.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
