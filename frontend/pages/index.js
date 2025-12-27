@@ -489,7 +489,7 @@ export default function Home() {
                   marginTop: '8px',
                   letterSpacing: '-1px',
                 }}>
-                  ₹{Number(prediction).toLocaleString('en-IN')}
+                  Rs. {Number(prediction).toLocaleString('en-IN')}.00
                 </div>
               </div>
             )}
